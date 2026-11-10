@@ -50,16 +50,27 @@ nav.steps button.done .dot{background:var(--ok)}
 .banner{border:1px solid var(--care);background:var(--care-soft);color:var(--ink);border-radius:8px;padding:10px 14px;font-size:.9rem}
 
 /* 나침이 */
-.guide{display:grid;grid-template-columns:56px 1fr;gap:12px;align-items:start}
-.compass{width:56px;height:56px}
-.compass .ring{fill:var(--sheet);stroke:var(--ink);stroke-width:2.5}
-.compass .tick{stroke:var(--pencil);stroke-width:2}
-.compass .n{fill:var(--care)} .compass .s{fill:var(--pencil)}
-.compass .hub{fill:var(--ink)}
-.compass .eye{fill:var(--ink)}
-.needle{transform-origin:28px 30px;animation:wobble 3.2s ease-in-out infinite}
+.guide{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:start}
+/* 나침이: 캐릭터 색은 테마와 상관없이 같은 모습(스티커 친구 시안 1번) */
+:root{--nc-line:#262b45;--nc-body:#4651ab;--nc-face:#fbf5e3;--nc-gold:#f2c94c;--nc-n:#b4472c;--nc-s:#6b7180;--nc-cheek:#f3a9a0}
+.compass{width:64px;height:68px;overflow:visible}
+.compass .ln{stroke:var(--nc-line);stroke-width:2.4;stroke-linejoin:round}
+.compass .body{fill:var(--nc-body)} .compass .face{fill:var(--nc-face);stroke:var(--nc-gold);stroke-width:1.6}
+.compass .gold{fill:var(--nc-gold)} .compass .bail{fill:none;stroke:var(--nc-gold);stroke-width:3}
+.compass .n{fill:var(--nc-n)} .compass .s{fill:var(--nc-s)} .compass .hub{fill:var(--nc-gold);stroke:var(--nc-line);stroke-width:1}
+.compass .eye{fill:var(--nc-line)} .compass .mouth{fill:none;stroke:var(--nc-line);stroke-width:1.6;stroke-linecap:round}
+.compass .cheek{fill:var(--nc-cheek);opacity:.75} .compass .shine{fill:none;stroke:#fff;stroke-opacity:.35;stroke-width:2.4;stroke-linecap:round}
+.compass .spark{stroke:var(--nc-gold);stroke-width:2.2;stroke-linecap:round;opacity:0;transition:opacity .2s}
+.compass .armL{transform-origin:16px 43px;transition:transform .3s ease-out}
+.compass .armR{transform-origin:64px 43px;transition:transform .3s ease-out}
+.needle{transform-origin:40px 40px;animation:wobble 3.2s ease-in-out infinite}
 @keyframes wobble{0%,100%{transform:rotate(-14deg)}50%{transform:rotate(11deg)}}
-@media (prefers-reduced-motion:reduce){.needle{animation:none;transform:rotate(-8deg)}}
+.compass.hello .armL{animation:wave 1.4s ease-in-out infinite}
+@keyframes wave{0%,100%{transform:rotate(165deg)}50%{transform:rotate(130deg)}}
+.compass.cheer .armR{transform:rotate(-150deg)}
+.compass.cheer .needle{animation:none;transform:rotate(0)}
+.compass.cheer .spark{opacity:1}
+@media (prefers-reduced-motion:reduce){.needle{animation:none;transform:rotate(-8deg)}.compass.hello .armL{animation:none;transform:rotate(140deg)}.compass .armL,.compass .armR{transition:none}}
 .bubble{background:var(--sheet);border:1px solid var(--rule);border-radius:4px 14px 14px 14px;padding:10px 14px;font-size:.95rem;min-width:0}
 .bubble b{font-family:var(--display);font-weight:700;margin-right:6px}
 
@@ -71,6 +82,7 @@ section.step{background:var(--sheet);border:1px solid var(--rule);border-radius:
 .btn:hover{border-color:var(--indigo)}
 .btn.primary{background:var(--indigo);border-color:var(--indigo);color:var(--sheet)}
 .btn.quiet{color:var(--pencil)}
+a.btn{display:inline-flex;align-items:center;text-decoration:none}
 .btn:disabled{opacity:.45;cursor:default}
 button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible,a:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
 .small{font-size:.86rem} .muted{color:var(--pencil)}
@@ -145,6 +157,23 @@ details.help[open]{border-color:var(--care)}
 footer{color:var(--pencil);font-size:.8rem;display:grid;gap:4px}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:8px 14px;border-radius:8px;font-size:.88rem;opacity:0;pointer-events:none;transition:opacity .2s;max-width:calc(100% - 32px)}
 .toast.on{opacity:1}
+
+/* v1.2.1 디자인 리뷰 */
+h2[tabindex="-1"]:focus{outline:none}
+nav.steps button{min-height:44px}
+details > summary{padding-block:10px}
+details.help{padding-block:2px}
+.textbtn{min-height:44px;padding-block:10px}
+a[href^="tel:"]{display:inline-flex;align-items:center;gap:8px;min-height:44px;min-width:56px;padding:0 12px;
+  border:1.5px solid var(--care);border-radius:8px;background:var(--sheet);color:var(--care);font-weight:700;text-decoration:none;font-variant-numeric:tabular-nums}
+a[href^="tel:"]:hover{background:var(--care-soft)}
+a[href^="tel:"] span{font-weight:500;font-size:.85rem;color:var(--ink)}
+.calls{display:flex;flex-wrap:wrap;gap:8px}
+.help dl{align-items:center;margin-bottom:10px}
+.moods{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+section[data-step="4"] > div:first-child{order:0}
+#planArea{order:1} #backWay{order:2} #cardArea{order:3} #allCards{order:4}
+section[data-step="4"] > .row{order:5}
 </style>
 </head>
 <body>
@@ -173,13 +202,23 @@ footer{color:var(--pencil);font-size:.8rem;display:grid;gap:4px}
 <nav class="steps" id="nav" aria-label="단계"></nav>
 
 <div class="guide" id="guide" aria-live="polite">
-  <svg class="compass" viewBox="0 0 56 60" aria-hidden="true">
-    <circle class="ring" cx="28" cy="30" r="24"/>
-    <line class="tick" x1="28" y1="8" x2="28" y2="12"/><line class="tick" x1="28" y1="48" x2="28" y2="52"/>
-    <line class="tick" x1="6" y1="30" x2="10" y2="30"/><line class="tick" x1="46" y1="30" x2="50" y2="30"/>
-    <circle class="eye" cx="20" cy="38" r="1.8"/><circle class="eye" cx="36" cy="38" r="1.8"/>
-    <g class="needle"><polygon class="n" points="28,12 31.5,30 24.5,30"/><polygon class="s" points="28,46 31.5,30 24.5,30"/></g>
-    <circle class="hub" cx="28" cy="30" r="2.6"/>
+  <svg class="compass" id="nachimi" viewBox="0 0 80 84" aria-hidden="true">
+    <g class="spark"><path d="M70 22l4-5M74 30l6-1M67 16l1-6"/></g>
+    <circle class="bail" cx="40" cy="10" r="5" style="stroke:var(--nc-line);stroke-width:5.4"/><circle class="bail" cx="40" cy="10" r="5"/>
+    <rect class="gold ln" x="35.5" y="13.5" width="9" height="6" rx="2.5"/>
+    <ellipse class="body ln" cx="32" cy="72" rx="7" ry="5"/><ellipse class="body ln" cx="48" cy="72" rx="7" ry="5"/>
+    <rect class="armL body ln" x="11.5" y="41" width="9" height="15" rx="4.5"/>
+    <rect class="armR body ln" x="59.5" y="41" width="9" height="15" rx="4.5"/>
+    <circle class="body ln" cx="40" cy="43" r="24"/>
+    <path class="shine" d="M22 33a20 20 0 0 1 10-11"/>
+    <circle class="face" cx="40" cy="43" r="18"/>
+    <polygon class="gold" points="40,25.2 41.6,27 40,28.8 38.4,27"/>
+    <polygon class="gold" points="55.5,43 54,41.4 52.5,43 54,44.6"/><polygon class="gold" points="40,60.5 38.4,59 40,57.5 41.6,59"/><polygon class="gold" points="24.5,43 26,41.4 27.5,43 26,44.6"/>
+    <ellipse class="cheek" cx="29.5" cy="52" rx="2.8" ry="1.7"/><ellipse class="cheek" cx="50.5" cy="52" rx="2.8" ry="1.7"/>
+    <circle class="eye" cx="33.5" cy="50" r="2"/><circle class="eye" cx="46.5" cy="50" r="2"/>
+    <path class="mouth" d="M37.6 52.6q2.4 2.2 4.8 0"/>
+    <g class="needle"><polygon class="n ln" style="stroke-width:1" points="40,30 43.4,40 36.6,40"/><polygon class="s ln" style="stroke-width:1" points="40,47 43.4,40 36.6,40"/></g>
+    <circle class="hub" cx="40" cy="40" r="2.4"/>
   </svg>
   <p class="bubble" id="bubble"><b>나침이</b><span id="say"></span></p>
 </div>
@@ -209,11 +248,17 @@ footer{color:var(--pencil);font-size:.8rem;display:grid;gap:4px}
       <li><a href="https://satp.goe.go.kr" target="_blank" rel="noopener">경기도 고입 포털</a> · 다른 지역은 그 지역 교육청 고입 안내를 찾아봐요</li>
       <li><a href="https://www.career.go.kr" target="_blank" rel="noopener">커리어넷</a> · 진로 검사와 직업·학과 정보</li>
     </ul>
+    <div class="row"><a class="btn primary" href="schools.html">고등학교 종류와 일정 둘러보기 →</a></div>
+    <p class="small muted">학교를 추천하지 않아요. 종류·원서 시기·확인할 곳만 모았어요.</p>
   </div>
   <div id="moodHard" class="note care" hidden>
     <p>말해 줘서 고마워요. 이건 이 노트보다 <b>사람이 도와줄 수 있는 일</b>이에요. 담임 선생님이나 학교 상담 선생님(Wee클래스)께 오늘 한 줄만이라도 이야기해 봐요. 바로 이야기할 곳이 필요하면 아래 번호로 연락할 수 있어요.</p>
-    <p><b>청소년상담 <a href="tel:1388">1388</a></b> (전화·문자·카카오톡) · <b>자살예방 상담전화 <a href="tel:109">109</a></b> (24시간)</p>
-    <p>지금 다쳤거나 당장 위험하면 <b><a href="tel:112">112</a>·<a href="tel:119">119</a></b>에 연락하거나 곁에 있는 안전한 어른에게 바로 말해요.</p>
+    <div class="calls">
+      <a href="tel:1388"><b>1388</b><span>청소년상담 · 문자·카톡도 돼요</span></a>
+      <a href="tel:109"><b>109</b><span>자살예방 상담 · 24시간</span></a>
+    </div>
+    <p>지금 다쳤거나 당장 위험하면 <b>112·119</b>에 연락하거나 곁에 있는 안전한 어른에게 바로 말해요.</p>
+    <div class="calls"><a href="tel:112"><b>112</b><span>경찰</span></a><a href="tel:119"><b>119</b><span>구조·구급</span></a></div>
     <p class="small">이 노트는 오늘 안 해도 괜찮아요. 마음이 조금 편해진 날 다시 와도 돼요.</p>
   </div>
 
@@ -347,7 +392,7 @@ footer{color:var(--pencil);font-size:.8rem;display:grid;gap:4px}
 <footer>
   <p>이 노트는 검사가 아니에요. 커리어넷 진로검사나 학교 진로상담을 대신하지 않고, 거기 가져갈 경험과 질문을 모아 두는 곳이에요.</p>
   <p>쓴 내용은 서버로 보내지 않고 이 브라우저에만 저장돼요. 같은 기기를 쓰는 사람은 볼 수 있으니, 공용 기기에서는 첫 쪽 "저장과 이어하기"에서 저장하지 않기를 켜요. 나침이는 정해진 말만 하는 안내 캐릭터이고, AI 상담이 아니에요.</p>
-  <p>v1.2 · 2026-11-10</p>
+  <p><a href="schools.html">고등학교 종류와 일정 둘러보기</a> · v1.3 · 2026-11-10</p>
 </footer>
 </div>
 <div class="toast" id="toast" role="status"></div>
@@ -463,7 +508,9 @@ function isDone(i){switch(i){case 0:return !!S.mood;case 1:return S.pairs.length
   case 4:return S.picks.length>0;case 5:return S.picks.some(p=>p.status==="done");default:return false}}
 function renderNav(){const n=$("#nav");n.innerHTML="";STEPS.forEach((t,i)=>{const b=document.createElement("button");b.type="button";
   b.innerHTML=`<span class="dot"></span>${t}`;if(i===cur)b.setAttribute("aria-current","step");if(isDone(i))b.classList.add("done");
-  b.addEventListener("click",()=>go(i));n.appendChild(b)})}
+  b.addEventListener("click",()=>go(i));n.appendChild(b)});
+  // 지금 단계가 가로 띠 밖에 있으면 띠만 옆으로 밀어 보이게 한다 (페이지는 움직이지 않음)
+  const c=n.querySelector('[aria-current="step"]');if(c){const d=c.getBoundingClientRect().left-n.getBoundingClientRect().left;n.scrollLeft+=d-(n.clientWidth-c.offsetWidth)/2}}
 function go(i){cur=i;S.step=i;$$("section.step").forEach(s=>s.hidden=+s.dataset.step!==i);renderNav();
   if(i===0)renderMood();if(i===1)renderPair();if(i===2)startTri();if(i===3)renderName();if(i===4)renderCards();if(i===5)renderLog();if(i===6)renderShare();
   say();save();window.scrollTo({top:0,behavior:"auto"});
@@ -489,14 +536,18 @@ function line(){
   case 5:return S.picks.some(p=>p.status==="done"&&p.again===0)?"별로였던 걸 알아낸 것도 성공이야. 하나를 지웠으니까.":"해 봤으면 세 줄만 남겨 줘. 아직이면 날짜가 될 때까지 기다리면 돼.";
   case 6:return "뭘 나눌지는 네가 정해. 체크 안 한 건 나누기 글에 안 들어가.";}
   return ""}
-function say(){$("#guide").hidden=!S.guide;$("#guideToggle").textContent=S.guide?"나침이 숨기기":"나침이 보이기";$("#say").textContent=line()}
+function say(){$("#guide").hidden=!S.guide;$("#guideToggle").textContent=S.guide?"나침이 숨기기":"나침이 보이기";$("#say").textContent=line();pose()}
+// 시작에선 손 흔들기, 실험을 고르거나 해 봤을 때와 나누기에선 응원, 나머지는 바늘만 흔들림
+function pose(){const c=$("#nachimi");if(!c)return;
+  const cheer=(cur===4&&S.picks.length>0)||(cur===5&&S.picks.some(p=>p.status==="done"))||cur===6;
+  c.classList.toggle("hello",cur===0&&S.mood!=="hard");c.classList.toggle("cheer",cheer)}
 $("#guideToggle").addEventListener("click",()=>{S.guide=!S.guide;save();say()});
 
 // ---- 0 마음 확인
 function renderMood(){$$("#moods .opt").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mood===S.mood)));
   $("#moodCompare").hidden=S.mood!=="compare";$("#moodSchool").hidden=S.mood!=="school";$("#moodHard").hidden=S.mood!=="hard";
   $("#worry").value=S.worry;$("#sayAdult").value=S.sayAdult;
-  const hard=S.mood==="hard";$("#helpBtn").hidden=!hard;$("#helpBtn").classList.toggle("primary",hard);$("#startBtn").classList.toggle("primary",!hard);
+  const hard=S.mood==="hard";$("#helpBtn").hidden=!hard;$("#helpBtn").classList.toggle("primary",hard);$("#startBtn").classList.toggle("primary",!hard&&S.mood!=="school");
   $("#startBtn").textContent=hard?"그래도 둘러보기":S.pairs.length?"관심 찾기 이어서 하기":"관심 찾으러 가기";
   let old=null;try{old=JSON.parse(localStorage.getItem(OLDKEY)||"null")}catch(e){}
   $("#oldBtn").hidden=!(old&&(old.nameTag||old.nameDoubt))}
@@ -639,7 +690,7 @@ function renderLog(){const area=$("#logArea");area.innerHTML="";
 $("#again").addEventListener("click",()=>{S.round++;S.seed=(Math.random()*2**31)|0;S.pairs=[];S.skips=[];S.hist=[];S.pairTarget=PAIR_BASE;S.triSets=null;S.tri=[];S.triIdx=0;clearDraft();save();go(1);toast("새로 골라요. 또 해 보고 싶다고 한 쪽이 조금 먼저 나와요")});
 
 // ---- 6 나누기
-const SHARE=[["name","내가 붙인 이름"],["acts","자주 고른 활동"],["plan","고른 실험과 날짜"],["log","실험 기록"],["said","묶어 보기에서 쓴 말"],["doubt","아직 잘 모르겠는 부분"],["adult","어른에게 하고 싶은 말"]];
+const SHARE=[["name","내가 붙인 이름"],["acts","오늘 많이 고른 활동"],["plan","고른 실험과 날짜"],["log","실험 기록"],["said","묶어 보기에서 쓴 말"],["doubt","아직 잘 모르겠는 부분"],["adult","어른에게 하고 싶은 말"]];
 function today(){const d=new Date(),z=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`}
 function shareText(){const L=[];const top=S.pairs.length>=6?ranked().slice(0,6):[];
   if(S.share.name&&S.nameTag.trim())L.push("",`내가 붙인 이름: ${S.nameTag.trim()}`);
