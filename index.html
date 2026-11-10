@@ -113,7 +113,7 @@ textarea{min-height:76px;resize:vertical;line-height:1.8;
 
 /* 둘 중 하나 */
 .progress{height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
-.progress>i{display:block;height:100%;width:0;background:var(--indigo);transition:width .25s}
+.progress>i{display:block;height:100%;width:0;background:var(--marker);transition:width .25s}
 @media (prefers-reduced-motion:reduce){.progress>i{transition:none}}
 .pair{display:grid;gap:12px;grid-template-columns:1fr 1fr}
 @media (max-width:520px){.pair{grid-template-columns:1fr}}
@@ -184,6 +184,13 @@ a[href^="tel:"] span{font-weight:500;font-size:.85rem;color:var(--ink)}
 .seg button{min-height:44px}
 .likes button{text-align:left}
 #planArea:focus{outline:none}
+.result{border:1.5px solid var(--indigo);border-radius:10px;padding:16px;display:grid;gap:14px;background:var(--indigo-soft)}
+.bars{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.bars li{display:grid;grid-template-columns:7.5em 1fr auto;gap:10px;align-items:center;font-size:.9rem}
+.bars .bar{height:12px;border-radius:6px;background:var(--sheet);border:1px solid var(--line);overflow:hidden}
+.bars .bar i{display:block;height:100%;background:var(--indigo);opacity:.55}
+.bars li.top{font-weight:600}.bars li.top .bar i{background:var(--marker);opacity:1}
+.bars .n{color:var(--pencil);font-size:.82rem;font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body>
@@ -193,7 +200,7 @@ a[href^="tel:"] span{font-weight:500;font-size:.85rem;color:var(--ink)}
 <header>
   <div>
     <h1>진로 실험 노트</h1>
-    <p class="sub">정하는 곳이 아니라 <span class="mark">둘러보고 작게 해 보는 곳</span>이에요.</p>
+    <p class="sub" id="headSub">정하는 곳이 아니라 <span class="mark">둘러보고 작게 해 보는 곳</span>이에요.</p>
   </div>
   <button type="button" class="textbtn" id="guideToggle">나침이 숨기기</button>
 </header>
@@ -238,8 +245,13 @@ a[href^="tel:"] span{font-weight:500;font-size:.85rem;color:var(--ink)}
   <div>
     <div class="eyebrow">시작</div>
     <h2>오늘 진로나 학교를 정하지 않아도 돼요</h2>
-    <p class="lead">학교보다 먼저, 내가 좋아하는 것과 잘할 수 있는 것을 작게 해 보며 찾아봐요. 지금 가장 마음에 걸리는 건 뭐예요?</p>
+    <p class="lead">학교보다 먼저, 내가 좋아하는 것과 잘할 수 있는 것을 작게 해 보며 찾아봐요.</p>
   </div>
+  <div class="row">
+    <button type="button" class="btn" id="helpBtn" hidden>도움받을 곳 보기</button>
+    <button type="button" class="btn primary" data-go="1" id="startBtn">관심 찾으러 가기</button>
+  </div>
+  <p class="small muted" style="margin-bottom:-8px">마음에 걸리는 게 있으면 눌러 봐요 (안 눌러도 돼요)</p>
   <div class="moods" id="moods">
     <button type="button" class="opt" data-mood="compare">친구들은 다 정한 것 같아서 불안해요<small>비교돼서 마음이 급할 때</small></button>
     <button type="button" class="opt" data-mood="unknown">내가 뭘 좋아하는지 모르겠어요<small>떠오르는 게 없을 때</small></button>
@@ -252,7 +264,7 @@ a[href^="tel:"] span{font-weight:500;font-size:.85rem;color:var(--ink)}
     <details class="small" id="worryMore"><summary class="muted">걱정을 적어 두고 싶으면 (안 써도 돼요)</summary>
       <div class="grid2" style="margin-top:8px">
         <label class="f"><span>걱정 한두 줄 (나누기 글에는 들어가지 않아요)</span><textarea id="worry" maxlength="2000" placeholder="예: 다들 의대나 예고 얘기를 하는데 나는 할 말이 없다"></textarea></label>
-        <label class="f"><span>믿을 만한 어른에게 해 보고 싶은 말</span><textarea id="sayAdult" maxlength="2000" placeholder="예: 아직 모르겠는데, 그래도 괜찮은지 물어보고 싶어"></textarea></label>
+        <label class="f"><span>누군가에게 해 보고 싶은 말</span><textarea id="sayAdult" maxlength="2000" placeholder="예: 아직 모르겠는데, 그래도 괜찮은지 물어보고 싶어"></textarea></label>
       </div></details>
   </div>
   <div id="moodSchool" class="note" hidden>
@@ -276,10 +288,7 @@ a[href^="tel:"] span{font-weight:500;font-size:.85rem;color:var(--ink)}
     <p class="small">이 노트는 오늘 안 해도 괜찮아요. 마음이 조금 편해진 날 다시 와도 돼요.</p>
   </div>
 
-  <div class="row">
-    <button type="button" class="btn" id="helpBtn" hidden>도움받을 곳 보기</button>
-    <button type="button" class="btn primary" data-go="1" id="startBtn">관심 찾으러 가기</button>
-  </div>
+
 
   <details class="small">
     <summary class="muted">저장과 이어하기</summary>
@@ -298,7 +307,7 @@ a[href^="tel:"] span{font-weight:500;font-size:.85rem;color:var(--ink)}
   <div>
     <div class="eyebrow">관심 찾기 · 둘 중 하나</div>
     <h2>더 해 보고 싶은 쪽을 골라요</h2>
-    <p class="lead">잘하는 것 말고, 해 보고 싶은 쪽이에요. 10번이면 끝나요.</p>
+    <p class="lead">잘할지는 몰라도 괜찮아요. 더 끌리는 쪽을 골라요. 10번이면 끝나요.</p>
   </div>
   <div class="progress" aria-hidden="true"><i id="pairBar"></i></div>
   <p class="small muted" id="pairCount" aria-live="polite"></p>
@@ -317,12 +326,17 @@ a[href^="tel:"] span{font-weight:500;font-size:.85rem;color:var(--ink)}
 <!-- 2 오늘의 나 -->
 <section class="step" data-step="2" hidden>
   <div>
-    <div class="eyebrow">오늘의 나</div>
-    <h2>끌리는 말을 눌러 봐요</h2>
-    <p class="lead">여러 개 골라도 되고, 없으면 "아직 모르겠어요"도 좋아요.</p>
+    <div class="eyebrow">오늘의 결과</div>
+    <h2 id="resultHead">오늘 끌린 쪽</h2>
+    <p class="lead" id="resultLead"></p>
   </div>
-  <div style="display:grid;gap:8px"><h3 class="small muted" style="font-family:var(--body);font-weight:600">오늘 고른 활동</h3><div class="chips" id="topChips"></div><p class="small muted" id="topNote"></p></div>
-  <div class="seg likes" id="likeBox" role="group" aria-label="끌리는 말"></div>
+  <div class="result" id="resultCard">
+    <ul class="bars" id="resultBars" aria-label="묶음별로 고른 횟수"></ul>
+    <div style="display:grid;gap:8px"><h3 class="small muted" style="font-family:var(--body);font-weight:600">오늘 고른 활동</h3><div class="chips" id="topChips"></div></div>
+    <p class="small muted" id="topNote"></p>
+  </div>
+  <div style="display:grid;gap:8px"><h3 style="font-size:1rem">이 중에 끌리는 말이 있으면 눌러 봐요 <span class="small muted" style="font-family:var(--body);font-weight:400">(안 눌러도 돼요)</span></h3>
+  <div class="seg likes" id="likeBox" role="group" aria-label="끌리는 말"></div></div>
   <details class="small" id="nameMore">
     <summary class="muted">내 말로 이름을 붙이고 싶으면 (안 써도 돼요)</summary>
     <label class="f" style="margin-top:10px"><span>내 관심에 붙이는 이름 (한 줄)</span><input type="text" id="nameTag" maxlength="200" placeholder="예: 직접 만들어서 보여 주는 일" autocomplete="off"></label>
@@ -351,15 +365,18 @@ a[href^="tel:"] span{font-weight:500;font-size:.85rem;color:var(--ink)}
     <p class="lead">좋았는지, 잘 됐는지 두 가지만 눌러요. 좋아하는 것과 잘할 수 있는 것은 해 봐야 보여요. "별로였다"도 성공이에요.</p>
   </div>
   <div id="logArea" style="display:grid;gap:12px"></div>
-  <div class="row"><button type="button" class="btn primary" data-go="5">나눌 것 고르기</button><button type="button" class="btn quiet" id="again">관심 찾기 한 번 더 하기</button></div>
+  <p class="note" id="logDone" hidden><b>여기까지 하면 끝이에요.</b> 기록은 이 기기에 저장됐어요. 다른 실험이 궁금하면 언제든 다시 와요.</p>
+  <div class="row"><button type="button" class="btn" id="again">관심 찾기 한 번 더 하기</button><button type="button" class="btn quiet" data-go="3">다른 실험 고르기</button></div>
+  <button type="button" class="textbtn" data-go="5" style="justify-self:start">누군가에게 보여 주고 싶을 때만: 나누기 글 만들기</button>
 </section>
 
 <!-- 5 나누기 -->
 <section class="step" data-step="5" hidden>
   <div>
-    <div class="eyebrow">나누기 (안 해도 돼요)</div>
-    <h2>보호자나 믿는 어른과 나눌 것을 내가 골라요</h2>
-    <p class="lead">체크한 것만 글로 만들어져요. 나누고 싶지 않으면 안 나눠도 괜찮아요.</p>
+    <div class="eyebrow">나누기 · 하고 싶을 때만</div>
+    <h2>보여 주고 싶은 게 있을 때만 골라요</h2>
+    <p class="lead">안 나눠도 이 노트는 이미 다 끝난 거예요. 보여 주고 싶은 사람이 있을 때, 보여 줄 것만 체크하면 글이 만들어져요.</p>
+    <button type="button" class="textbtn" data-go="4">← 기록으로 돌아가기</button>
   </div>
   <div style="display:grid;gap:8px" id="shareBox"></div>
   <pre class="out" id="shareOut"></pre>
@@ -505,16 +522,16 @@ function hasContent(x){return !!(x.mood||x.worry.trim()||x.sayAdult.trim()||x.pa
 function rng(n){let t=(S.seed+n*0x6D2B79F5)>>>0;return function(){t+=0x6D2B79F5;let r=Math.imul(t^t>>>15,1|t);r^=r+Math.imul(r^r>>>7,61|r);return((r^r>>>14)>>>0)/4294967296}}
 
 // ---- 단계
-const STEPS=["시작","둘 중 하나","오늘의 나","실험 고르기","기록","나누기"];
+const STEPS=["시작","둘 중 하나","오늘의 결과","실험 고르기","기록","나누기(선택)"];
 let cur=0;
 const answered=()=>S.pairs.length+S.skips.length;
-function isDone(i){switch(i){case 0:return !!S.mood;case 1:return answered()>=S.pairTarget;case 2:return S.likes.length>0||!!S.nameTag.trim();
+function isDone(i){switch(i){case 0:return !!S.mood;case 1:return answered()>=S.pairTarget;case 2:return S.likes.length>0||!!S.nameTag.trim()||answered()>=S.pairTarget;
   case 3:return S.picks.length>0;case 4:return S.picks.some(p=>p.status==="done");default:return false}}
-function renderNav(){const n=$("#nav");n.innerHTML="";STEPS.forEach((t,i)=>{const b=document.createElement("button");b.type="button";
+function renderNav(){const n=$("#nav");n.innerHTML="";STEPS.forEach((t,i)=>{if(i===5&&cur!==5)return;const b=document.createElement("button");b.type="button";
   b.innerHTML=`<span class="dot"></span>${t}`;if(i===cur)b.setAttribute("aria-current","step");if(isDone(i)){b.classList.add("done");b.setAttribute("aria-label",t+" (했어요)")}
   b.addEventListener("click",()=>go(i));n.appendChild(b)});
   const c=n.querySelector('[aria-current="step"]');if(c){const d=c.getBoundingClientRect().left-n.getBoundingClientRect().left;n.scrollLeft+=d-(n.clientWidth-c.offsetWidth)/2}}
-function go(i){cur=i;S.step=i;$$("section.step[data-step]").forEach(s=>s.hidden=+s.dataset.step!==i);renderNav();
+function go(i){cur=i;S.step=i;$("#headSub").hidden=i!==0;$$("section.step[data-step]").forEach(s=>s.hidden=+s.dataset.step!==i);renderNav();
   if(i===0)renderMood();if(i===1)renderPair();if(i===2)renderName();if(i===3)renderCards();if(i===4)renderLog();if(i===5)renderShare();
   say();save();window.scrollTo({top:0,behavior:"auto"});
   const h=document.querySelector(`section.step[data-step="${i}"] h2`);if(h&&go.moved){h.setAttribute("tabindex","-1");h.focus({preventScroll:true})}go.moved=true}
@@ -529,19 +546,19 @@ function line(){
     hard:"말해 줘서 고마워. 이건 나보다 사람이 더 잘 도와줄 수 있어. 연락처를 꼭 봐 줘. 이 노트는 오늘 안 해도 괜찮아."})[S.mood]
     ||"안녕, 나는 나침이야. 내 바늘은 아직 자주 흔들려. 그래도 괜찮아. 오늘은 5분만 둘러보자.";
   case 1:{const n=answered();
-    if(n===0)return "정답은 없어. 잘하는 것 말고 해 보고 싶은 쪽을 골라 줘.";
+    if(n===0)return "정답은 없어. 오래 고민하지 말고 느낌대로 골라 줘.";
     if(n>=S.pairTarget)return "다 했어! 결과 보러 가자.";
     if(S.skips.length>=4&&S.skips.length>S.pairs.length)return "별로인 게 많은 날도 있어. 그것도 정보야. 넘긴 것도 10번에 들어가.";
     return "좋아, 계속 가 보자. 멈추고 싶으면 언제든 아래 버튼을 눌러.";}
-  case 2:return "글은 안 써도 돼. 눌러서 고르기만 하자.";
+  case 2:return S.pairs.length<3?"아직 고른 게 적어서 흐릿해. 괜찮아, 실험 하나로 알아보자.":"이건 검사가 아니라 오늘 네가 고른 기록이야. 다시 하면 달라져도 괜찮아.";
   case 3:return S.picks.length?"좋아! 오늘은 여기까지야. 해 볼 날만 골라 두자.":"생각만으로는 잘 모를 때가 많아. 작게 한 번 해 보자. 하나면 충분해.";
   case 4:return S.picks.some(p=>p.status==="done"&&p.skill===2)?"생각보다 잘 됐다니 좋다! 그게 잘할 수 있는 것의 단서야.":S.picks.some(p=>p.status==="done"&&p.again===0)?"별로였던 걸 알아낸 것도 성공이야.":"해 봤으면 버튼만 눌러 줘. 아직이면 날짜가 될 때까지 기다리면 돼.";
-  case 5:return "뭘 나눌지는 네가 정해. 안 나눠도 괜찮아.";}
+  case 5:return "안 나눠도 돼. 보여 주고 싶을 때만 쓰는 곳이야.";}
   return ""}
 function say(){$("#guide").hidden=!S.guide;$("#guideToggle").textContent=S.guide?"나침이 숨기기":"나침이 보이기";$("#say").textContent=line();pose()}
 // 시작에선 손 흔들기, 실험을 고르거나 해 봤을 때와 나누기에선 응원, 나머지는 바늘만 흔들림
 function pose(){const c=$("#nachimi");if(!c)return;
-  const cheer=(cur===3&&S.picks.length>0)||(cur===4&&S.picks.some(p=>p.status==="done"))||cur===5;
+  const cheer=(cur===3&&S.picks.length>0)||(cur===4&&S.picks.some(p=>p.status==="done"));
   c.classList.toggle("hello",cur===0&&S.mood!=="hard");c.classList.toggle("cheer",cheer)}
 $("#guideToggle").addEventListener("click",()=>{S.guide=!S.guide;save();say()});
 
@@ -554,10 +571,10 @@ function renderMood(){$$("#moods .opt").forEach(b=>b.setAttribute("aria-pressed"
   let old=null;try{old=JSON.parse(localStorage.getItem(OLDKEY)||"null")}catch(e){}
   $("#oldBtn").hidden=!(old&&(old.nameTag||old.nameDoubt))}
 $$("#moods .opt").forEach(b=>b.addEventListener("click",()=>{S.mood=S.mood===b.dataset.mood?"":b.dataset.mood;
-  if(S.mood==="hard")$("#help").open=true;renderMood();renderNav();say();save()}));
+  renderMood();renderNav();say();save()}));
 $("#worry").addEventListener("input",e=>{S.worry=e.target.value;save()});
 $("#sayAdult").addEventListener("input",e=>{S.sayAdult=e.target.value;save()});
-$("#helpBtn").addEventListener("click",()=>{const h=$("#help");h.open=true;h.scrollIntoView({behavior:"auto",block:"start"});h.querySelector("summary").focus()});
+$("#helpBtn").addEventListener("click",()=>{const h=$("#moodHard");h.scrollIntoView({behavior:"auto",block:"start"});const a=h.querySelector("a");if(a)a.focus({preventScroll:true})});
 $("#noSave").checked=noSave;
 $("#noSave").addEventListener("change",e=>{noSave=e.target.checked;try{noSave?sessionStorage.setItem("jinro-nosave","1"):sessionStorage.removeItem("jinro-nosave")}catch(x){}
   if(noSave){try{localStorage.removeItem(KEY)}catch(x){}}save()});
@@ -606,15 +623,27 @@ function chosenCounts(){const m={};S.pairs.forEach(p=>{m[p.c]=(m[p.c]||0)+1});re
 function ranked(){const m=chosenCounts(),r=rng(77);const tie={};Object.keys(m).forEach(k=>tie[k]=r());
   const gs=gScore();return Object.keys(m).map(Number).sort((a,b)=>m[b]-m[a]||gs[ACTS[b].g]-gs[ACTS[a].g]||tie[a]-tie[b])}
 // 화면과 나누기 글이 같은 목록을 쓰도록 한 곳에서 만든다
-function todayActs(){const o=scoreOrder().slice(0,2);let a=ranked().filter(id=>o.includes(ACTS[id].g));if(a.length<3)a=ranked();return a.slice(0,6)}
+function todayActs(){const o=topGroups();let a=o.length&&o.length<=3?ranked().filter(id=>o.includes(ACTS[id].g)):[];if(a.length<3)a=ranked();return a.slice(0,6)}
 function isBlur(){if(S.pairs.length<6)return true;const sc=gScore().slice().sort((a,b)=>b-a);return sc[0]-sc[3]<.3}
 
 // ---- 2 오늘의 나: 끌리는 말을 버튼으로 고른다
 const LIKE=["직접 만들어 보는 일","몰랐던 걸 알아내는 일","누군가를 돕는 일","내 생각을 보여 주는 일","말과 글로 전하는 일","계획하고 사람을 모으는 일","몸을 움직이는 일","자연·동물과 함께하는 일","세상 문제를 바꿔 보는 일"];
 function likeText(){return S.likes.filter(g=>g>=0).map(g=>LIKE[g])}
-function renderName(){const top=todayActs(),o=scoreOrder();
+// 오늘 가장 많이 고른 묶음(동점이면 모두). 화면과 나누기 글이 같은 기준을 쓴다
+function topGroups(){const w=gStats().win,mx=Math.max(...w);if(mx<1)return [];return scoreOrder().filter(g=>w[g]===mx)}
+function byWins(){const w=gStats().win;return scoreOrder().filter(g=>w[g]>0).sort((a,b)=>w[b]-w[a])}
+function renderResult(){const w=gStats().win,o=byWins(),tg=topGroups(),mx=Math.max(1,...w),nm=g=>`<span style="white-space:nowrap">${esc(GROUPS[g])}</span>`;
+  const many=tg.length>3;
+  if(S.pairs.length<3){$("#resultHead").textContent="아직 고른 게 적어요";$("#resultLead").textContent="괜찮아요. 고른 것만으로 보여 줄게요. 실험을 해 보면 더 잘 보여요."}
+  else if(many){$("#resultHead").textContent="오늘은 여러 쪽이 비슷하게 끌렸어요";$("#resultLead").textContent="정상이에요. 관심이 넓다는 뜻일 수도 있어요. 작게 해 보면 더 또렷해져요."}
+  else{$("#resultHead").innerHTML=`오늘은 ${tg.map(nm).join(", ")} 쪽이 ${tg.length===1?"가장 ":""}많이 끌렸어요`;
+    $("#resultLead").textContent="검사 결과가 아니라 오늘 고른 기록이에요. 다시 하면 달라질 수 있어요."}
+  $("#resultBars").innerHTML=o.map(g=>`<li class="${!many&&tg.includes(g)?"top":""}"><span>${esc(GROUPS[g])}</span><span class="bar" aria-hidden="true"><i style="width:${Math.round(w[g]/mx*100)}%"></i></span><span class="n">${w[g]}번</span></li>`).join("")
+    +(o.length<GROUPS.length?`<li><span class="small muted" style="grid-column:1/-1">나머지 ${GROUPS.length-o.length}개 묶음은 오늘 고르지 않았어요</span></li>`:"");
+  $("#resultCard").hidden=!S.pairs.length}
+function renderName(){const top=todayActs(),o=scoreOrder();renderResult();
   $("#topChips").innerHTML=top.map(id=>`<span class="chip">${esc(ACTS[id].name)}</span>`).join("");
-  $("#topNote").textContent=!top.length?"아직 고른 활동이 없어요. 아래에서 끌리는 말만 골라도 돼요.":isBlur()?"아직 흐릿해요. 정상이에요. 실험 하나로 알아봐요.":"";
+  $("#topNote").textContent=!top.length?"아직 고른 활동이 없어요. 아래에서 끌리는 말만 골라도 돼요.":"";
   const box=$("#likeBox");box.innerHTML="";
   [...o,-1].forEach(g=>{const b=document.createElement("button");b.type="button";b.textContent=g<0?"아직 모르겠어요":LIKE[g];b.dataset.lk=g;
     b.setAttribute("aria-pressed",String(S.likes.includes(g)));
@@ -624,7 +653,7 @@ function renderName(){const top=todayActs(),o=scoreOrder();
 $("#nameTag").addEventListener("input",e=>{S.nameTag=e.target.value;save();renderNav()});
 
 // ---- 3 실험 카드
-let showAll=false;
+let showAll=false;const openG=new Set();
 // 점수 순서(고르기 결과만). 카드 순서는 여기에 끌리는 말을 먼저 올린다
 function scoreOrder(){const sc=gScore();const r=rng(55);const tie=sc.map(()=>r());return GROUPS.map((_,i)=>i).sort((a,b)=>sc[b]-sc[a]||tie[a]-tie[b])}
 function groupOrder(){const L=S.likes.filter(g=>g>=0),o=scoreOrder();return o.filter(g=>L.includes(g)).concat(o.filter(g=>!L.includes(g)))}
@@ -633,14 +662,19 @@ function ymd(d){const z=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-
 function renderCards(){const order=groupOrder(),gs=showAll?order:order.slice(0,3);const area=$("#cardArea");area.innerHTML="";
   gs.forEach(g=>{const wrap=document.createElement("div");wrap.style.display="grid";wrap.style.gap="10px";
     wrap.innerHTML=`<h3 class="groupname">${esc(GROUPS[g])}</h3>`;const grid=document.createElement("div");grid.className="cards";
-    CARDS.filter(c=>c.g===g).forEach(c=>{const pk=picked(c.id),on=!!pk;const d=document.createElement("div");d.className="xcard";d.dataset.on=on?"1":"0";
+    const isPk=c=>{const p=picked(c.id);return p&&p.status==="picked"};
+    const list=CARDS.filter(c=>c.g===g&&!isPk(c)),shown=openG.has(g)?list:list.filter((c,i)=>i===0||picked(c.id));
+    shown.forEach(c=>{const pk=picked(c.id),on=!!pk;const d=document.createElement("div");d.className="xcard";d.dataset.on=on?"1":"0";
       d.innerHTML=`<div class="g">${esc(GROUPS[c.g])}</div><h3>${esc(c.todo)}</h3><dl><dt>알아볼 것</dt><dd>${esc(c.find)}</dd><dt>시간</dt><dd>${esc(c.time)}</dd>${c.note?`<dt>꼭</dt><dd>${esc(c.note)}</dd>`:""}</dl>`;
       const locked=on&&(pk.status!=="picked"||!!pk.fun||!!pk.hard||pk.again!=null||pk.skill!=null);
       const b=document.createElement("button");b.type="button";b.className="btn"+(on?" primary":"");b.textContent=locked?"기록 있음 · 기록 쪽에서 보기":on?"고름 ✓":"이거 해 볼래요";b.style.justifySelf="start";
       b.addEventListener("click",()=>{if(locked){go(4);return}if(on){go3Top();return}
         if(S.picks.filter(p=>p.status==="picked").length>=PICK_MAX){toast("한 번에 두 개까지 고를 수 있어요. 위에서 하나를 빼고 골라요");go3Top();return}
         S.picks.push({cid:c.id,date:"",who:"",status:"picked",fun:"",hard:"",again:null,skill:null});keep();save();renderCards();renderNav();say();go3Top()});
-      d.appendChild(b);grid.appendChild(d)});wrap.appendChild(grid);area.appendChild(wrap)});
+      d.appendChild(b);grid.appendChild(d)});wrap.appendChild(grid);
+    if(shown.length<list.length){const m=document.createElement("button");m.type="button";m.className="textbtn";m.style.justifySelf="start";
+      m.textContent=`${GROUPS[g]} 카드 ${list.length-shown.length}장 더 보기`;m.addEventListener("click",()=>{openG.add(g);renderCards();const f=$(`#cardArea [data-g="${g}"] .xcard:nth-child(${shown.length+1}) h3`);if(f){f.setAttribute("tabindex","-1");f.focus()}});wrap.appendChild(m)}
+    wrap.dataset.g=g;area.appendChild(wrap)});
   $("#allCards").textContent=showAll?"내 쪽 묶음만 보기":"다른 묶음 카드도 보기";
   if(!S.pairs.length)area.insertAdjacentHTML("afterbegin",`<p class="note">관심 찾기를 건너뛰어서 세 묶음을 아무렇게나 골랐어요. 끌리는 게 없으면 "다른 묶음 카드도 보기"를 눌러요.</p>`);
   renderPlan()}
@@ -651,18 +685,22 @@ function keep(){try{if(navigator.storage&&navigator.storage.persist)navigator.st
 // 고른 실험은 카드 목록 위에: 날짜(누르기만) · 캘린더에 넣기 · 빼기, 그리고 오늘은 끝
 function renderPlan(){const area=$("#planArea");const act=S.picks.filter(p=>p.status==="picked");area.innerHTML="";
   if(!act.length)return;const now=new Date(),max=new Date(now.getTime()+14*864e5);
-  area.insertAdjacentHTML("beforeend",`<div class="note"><p><b>오늘은 여기까지! 잘했어요.</b> 해 볼 날만 골라 두고, 해 본 뒤에 이 주소로 다시 와서 버튼만 누르면 돼요.</p></div>`);
-  act.forEach(p=>{const c=CARDS[p.cid];const d=document.createElement("div");d.className="xcard";d.dataset.on="1";
-    d.innerHTML=`<div class="g">고른 실험</div><h3>${esc(c.todo)}</h3>
+  const box=document.createElement("div");box.className="result";box.style.gap="12px";
+  box.insertAdjacentHTML("beforeend",`<p><b>오늘은 여기까지! 잘했어요.</b><br><span class="small">해 볼 날만 골라 두고, 해 본 뒤에 이 주소로 다시 와서 버튼만 누르면 돼요.</span></p>`);
+  area.appendChild(box);
+  act.forEach(p=>{const c=CARDS[p.cid];const d=document.createElement("div");d.className="xcard";d.dataset.on="1";d.style.background="var(--sheet)";
+    d.innerHTML=`<div class="g">고른 실험 · ${esc(GROUPS[c.g])}</div><h3>${esc(c.todo)}</h3>${c.note?`<p class="small"><b>꼭</b> ${esc(c.note)}</p>`:""}
       <label class="f"><span>해 볼 날 (안 정해도 돼요)</span><input type="date" min="${ymd(now)}" max="${ymd(max)}" value="${esc(p.date)}"></label>
       <div class="row"><button type="button" class="btn" data-ics>캘린더에 넣기</button><button type="button" class="btn quiet" data-drop>빼기</button></div>`;
     d.querySelector("input").addEventListener("change",e=>{p.date=e.target.value;save()});
     d.querySelector("[data-ics]").addEventListener("click",()=>ics(p));
     d.querySelector("[data-drop]").addEventListener("click",()=>{S.picks=S.picks.filter(x=>x!==p);save();renderCards();renderNav();say()});
-    area.appendChild(d)});
-  area.insertAdjacentHTML("beforeend",`<div class="note"><p class="small">기록은 이 브라우저에만 있어요. 아이폰은 이 주소를 7일 넘게 안 열면 기록이 지워질 수 있어요. 기록 코드를 메모장이나 나에게 보내는 메시지에 붙여 두세요(내가 쓴 글이 다 들어 있으니 다른 사람에게는 보내지 마세요).</p>
-    <div class="row"><button type="button" class="btn" id="copyCode4">기록 코드 복사하기</button><button type="button" class="btn quiet" id="copyLink">이 주소 복사하기</button></div>
-    <textarea class="code" id="codeBox4" readonly hidden aria-label="기록 코드"></textarea></div>`);
+    box.appendChild(d)});
+  box.insertAdjacentHTML("beforeend",`<details class="small"><summary class="muted">기록이 사라지지 않게 하려면 (아이폰은 7일 넘게 안 열면 지워질 수 있어요)</summary>
+    <p style="margin-top:8px">기록 코드를 메모장이나 나에게 보내는 메시지에 붙여 두면, 다른 기기에서도 이어 할 수 있어요. 내가 쓴 글이 다 들어 있으니 다른 사람에게는 보내지 마세요.</p>
+    <div class="row" style="margin-top:8px"><button type="button" class="btn" id="copyCode4">기록 코드 복사하기</button><button type="button" class="btn quiet" id="copyLink">이 주소 복사하기</button></div>
+    <textarea class="code" id="codeBox4" readonly hidden aria-label="기록 코드"></textarea></details>`);
+  if(S.picks.filter(p=>p.status==="picked").length<PICK_MAX)box.insertAdjacentHTML("beforeend",`<p class="small muted">하나 더 해 보고 싶으면 아래에서 골라도 돼요 (두 개까지).</p>`);
   $("#copyCode4").addEventListener("click",()=>copyText(encode(),"기록 코드를 복사했어요",$("#codeBox4")));
   $("#copyLink").addEventListener("click",()=>copyText(location.href.split("#")[0],"주소를 복사했어요"))}
 // 캘린더 파일(.ics): 그날 아침 9시에 알림
@@ -678,11 +716,11 @@ function ics(p){const c=CARDS[p.cid];const d=p.date?new Date(p.date+"T00:00:00")
 // ---- 4 기록: 버튼만 누르고, 글은 접어 둔다
 const AGAIN=[["0","별로였어요"],["1","그저 그랬어요"],["2","또 해 보고 싶어요"]];
 const SKILL=[["0","어려웠어요"],["1","어려웠지만 해냈어요"],["2","생각보다 잘 됐어요"]];
-function renderLog(focusKey){const area=$("#logArea");area.innerHTML="";
+function renderLog(focusKey){const area=$("#logArea");area.innerHTML="";$("#logDone").hidden=!S.picks.some(p=>p.status==="done"&&(p.again!=null||p.skill!=null));
   if(!S.picks.length){area.innerHTML=`<p class="note">아직 고른 실험이 없어요. 앞 쪽에서 하나 골라 봐요.</p>`;return}
   S.picks.forEach(p=>{const c=CARDS[p.cid];const d=document.createElement("div");d.className="log";
     const st={picked:"해 볼 예정",done:"해 봄",stopped:"그만둠"}[p.status];
-    d.innerHTML=`<div class="head"><h3>${esc(c.todo)}</h3><span class="state ${p.status==="done"?"done":""}">${st}${p.date&&p.status==="picked"?" · "+esc(p.date):""}</span></div>
+    d.innerHTML=`<div class="head"><h3>${esc(c.todo)}</h3>${p.date&&p.status==="picked"?`<span class="state">${esc(p.date.slice(5).replace("-","/"))} 예정</span>`:""}</div>
       <div class="seg" role="group" aria-label="상태">${[["picked","아직이에요"],["done","해 봤어요"],["stopped","그만둘래요"]].map(([k,l])=>`<button type="button" data-st="${k}" data-k="${p.cid}-st-${k}" aria-pressed="${p.status===k}">${l}</button>`).join("")}</div>
       <div style="display:grid;gap:8px" ${p.status==="done"?"":"hidden"}>
         <span class="small muted">해 보니 어땠어요?</span>
@@ -714,13 +752,13 @@ function expMap(){const d=S.picks.filter(p=>p.status==="done"&&p.again!=null&&p.
 $("#again").addEventListener("click",()=>{S.round++;S.seed=(Math.random()*2**31)|0;S.pairs=[];S.skips=[];S.hist=[];S.pairTarget=PAIR_BASE;S.triSets=null;save();go(1);toast("새로 골라요. 또 해 보고 싶다고 한 쪽이 조금 먼저 나와요")});
 
 // ---- 5 나누기
-function shareItems(){const L=[["name","끌리는 말과 이름"],["acts","오늘 고른 활동"],["plan","고른 실험과 날짜"],["log","실험 기록"]];
+function shareItems(){const L=[["name","끌리는 말과 이름"],["acts","오늘의 결과(끌린 쪽과 고른 활동)"],["plan","고른 실험과 날짜"],["log","실험 기록"]];
   if(S.tri.some(t=>t.same||t.diff))L.push(["said","예전에 묶어 보기에서 쓴 말"]);if(S.nameDoubt.trim())L.push(["doubt","아직 잘 모르겠는 부분"]);
-  L.push(["adult","어른에게 하고 싶은 말"]);return L}
+  L.push(["adult","하고 싶은 말"]);return L}
 function shareText(){const L=[];const top=todayActs();
   if(S.share.name){const lk=likeText();if(lk.length)L.push("",`끌리는 말: ${lk.join(", ")}`);if(S.nameTag.trim())L.push(`내가 붙인 이름: ${S.nameTag.trim()}`)}
   if(S.share.doubt&&S.nameDoubt.trim())L.push(`아직 잘 모르겠는 부분: ${S.nameDoubt.trim()}`);
-  if(S.share.acts&&top.length)L.push("",`오늘 고른 활동: ${top.map(i=>ACTS[i].name).join(", ")}`);
+  if(S.share.acts&&top.length){const tg=topGroups();L.push("");if(S.pairs.length>=3&&tg.length)L.push(tg.length>3?"오늘 끌린 쪽: 여러 쪽이 비슷했어요":`오늘 많이 끌린 쪽: ${tg.map(g=>GROUPS[g]).join(", ")}`);L.push(`오늘 고른 활동: ${top.map(i=>ACTS[i].name).join(", ")}`)}
   if(S.share.said)S.tri.filter(t=>t.same||t.diff).forEach(t=>L.push(`- ${t.set.filter(x=>x!==t.odd).map(x=>ACTS[x].name).join("·")}: ${t.same||"-"} / ${ACTS[t.odd].name}: ${t.diff||"-"}`));
   const todo=S.picks.filter(p=>p.status==="picked");
   if(S.share.plan&&todo.length){L.push("","해 볼 실험");todo.forEach(p=>L.push(`- ${CARDS[p.cid].todo}${p.date?` (${p.date})`:""}`))}
@@ -729,7 +767,7 @@ function shareText(){const L=[];const top=todayActs();
   if(S.share.log){const m=expMap();if(m.length){L.push("","지금까지 알게 된 것");m.forEach(([t,list])=>L.push(`- ${t}: ${list.join(", ")}`))}}
   if(S.share.adult&&S.sayAdult.trim())L.push("",`하고 싶은 말: ${S.sayAdult.trim()}`);
   if(!L.length)return "";
-  return [`진로 실험 노트 · ${ymd(new Date())}`,"이건 검사 결과나 진로 결정이 아니라, 지금 해 보고 싶은 일을 둘러본 기록이에요."].concat(L,["","(보호자께: 결과보다 '어떤 순간이 재미있었어? 뭐가 생각보다 잘 됐어?'를 물어봐 주세요.)"]).join("\n")}
+  return [`진로 실험 노트 · ${ymd(new Date())}`,"이건 검사 결과나 진로 결정이 아니라, 지금 해 보고 싶은 일을 둘러본 기록이에요."].concat(L,["","(읽는 분께: 결과보다 '어떤 순간이 재미있었어? 뭐가 생각보다 잘 됐어?'를 물어봐 주세요.)"]).join("\n")}
 function showShare(){const t=shareText();$("#shareOut").textContent=t||"나눌 것을 위에서 체크하면 여기에 글이 만들어져요. 내용이 없는 항목은 글에 넣지 않아요.";$("#copyShare").disabled=!t}
 function renderShare(){const box=$("#shareBox");box.innerHTML="";shareItems().forEach(([k,l])=>{const lab=document.createElement("label");lab.className="chk";
     lab.innerHTML=`<input type="checkbox" id="sh-${k}" ${S.share[k]?"checked":""}><span>${l}</span>`;
@@ -757,7 +795,7 @@ if(/KAKAOTALK|Instagram|FBAN|FBAV|NAVER\(inapp|DaumApps|BAND\/|; wv\)|Line\//i.t
 load();
 // 다시 왔을 때: 날짜 없이 고른 실험만 있으면 실험 쪽, 고른 실험이 있으면 기록 쪽, 아니면 하던 곳
 function resumeStep(){if(S.picks.some(p=>p.status==="picked"&&!p.date)&&!S.picks.some(p=>p.status==="done"))return 3;
-  return S.picks.length?4:S.step}
+  return S.picks.length?4:Math.min(S.step,4)}
 if(hadSaved){$$("section.step[data-step]").forEach(s=>s.hidden=true);$("#nav").hidden=true;$("#guide").hidden=true;$("#resumeBox").hidden=false;
   const done=()=>{$("#resumeBox").hidden=true;$("#nav").hidden=false};
   $("#resumeGo").addEventListener("click",()=>{S=P;P=null;done();go(resumeStep())});
