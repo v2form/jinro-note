@@ -191,6 +191,18 @@ a[href^="tel:"] span{font-weight:500;font-size:.85rem;color:var(--ink)}
 .bars .bar i{display:block;height:100%;background:var(--indigo);opacity:.55}
 .bars li.top{font-weight:600}.bars li.top .bar i{background:var(--marker);opacity:1}
 .bars .n{color:var(--pencil);font-size:.82rem;font-variant-numeric:tabular-nums}
+/* v1.5 나의 방향 · AI와 이야기해 보기 */
+.dir{border:1.5px solid var(--indigo);border-radius:10px;padding:16px;display:grid;gap:12px;background:var(--sheet)}
+.dir .eyebrow{margin:0}
+.dir h3{font-size:1.08rem;text-wrap:balance}
+.dir ul{margin:0;padding-left:1.1em;display:grid;gap:4px;font-size:.92rem}
+.dir .dots{font-variant-numeric:tabular-nums;letter-spacing:.06em}
+.dir .dots i{font-style:normal;color:var(--indigo)}
+.dir .kw{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.dir .fine{border-top:1px dashed var(--rule);padding-top:10px}
+.ai{display:grid;gap:10px;margin-top:10px}
+.ai pre.out{max-height:220px}
+.ai .links{display:flex;flex-wrap:wrap;gap:8px}
 </style>
 </head>
 <body>
@@ -251,6 +263,7 @@ a[href^="tel:"] span{font-weight:500;font-size:.85rem;color:var(--ink)}
     <button type="button" class="btn" id="helpBtn" hidden>도움받을 곳 보기</button>
     <button type="button" class="btn primary" data-go="1" id="startBtn">관심 찾으러 가기</button>
   </div>
+  <button type="button" class="textbtn" data-go="4" id="dirLink" style="justify-self:start" hidden>나의 방향 보기 →</button>
   <p class="small muted" style="margin-bottom:-8px">마음에 걸리는 게 있으면 눌러 봐요 (안 눌러도 돼요)</p>
   <div class="moods" id="moods">
     <button type="button" class="opt" data-mood="compare">친구들은 다 정한 것 같아서 불안해요<small>비교돼서 마음이 급할 때</small></button>
@@ -342,6 +355,7 @@ a[href^="tel:"] span{font-weight:500;font-size:.85rem;color:var(--ink)}
     <label class="f" style="margin-top:10px"><span>내 관심에 붙이는 이름 (한 줄)</span><input type="text" id="nameTag" maxlength="200" placeholder="예: 직접 만들어서 보여 주는 일" autocomplete="off"></label>
   </details>
   <div class="row"><button type="button" class="btn primary" data-go="3">작게 해 볼 일 고르기</button></div>
+  <div id="aiHost2"></div>
 </section>
 
 <!-- 3 실험 카드 -->
@@ -364,9 +378,11 @@ a[href^="tel:"] span{font-weight:500;font-size:.85rem;color:var(--ink)}
     <h2>해 봤으면 버튼만 눌러요</h2>
     <p class="lead">좋았는지, 잘 됐는지 두 가지만 눌러요. 좋아하는 것과 잘할 수 있는 것은 해 봐야 보여요. "별로였다"도 성공이에요.</p>
   </div>
+  <div id="dirArea"></div>
   <div id="logArea" style="display:grid;gap:12px"></div>
   <p class="note" id="logDone" hidden><b>여기까지 하면 끝이에요.</b> 기록은 이 기기에 저장됐어요. 다른 실험이 궁금하면 언제든 다시 와요.</p>
   <div class="row"><button type="button" class="btn" id="again">관심 찾기 한 번 더 하기</button><button type="button" class="btn quiet" data-go="3">다른 실험 고르기</button></div>
+  <div id="aiHost4"></div>
   <button type="button" class="textbtn" data-go="5" style="justify-self:start">누군가에게 보여 주고 싶을 때만: 나누기 글 만들기</button>
 </section>
 
@@ -400,8 +416,8 @@ a[href^="tel:"] span{font-weight:500;font-size:.85rem;color:var(--ink)}
 
 <footer>
   <p>이 노트는 검사가 아니에요. 커리어넷 진로검사나 학교 진로상담을 대신하지 않고, 거기 가져갈 경험과 질문을 모아 두는 곳이에요.</p>
-  <p>쓴 내용은 서버로 보내지 않고 이 브라우저에만 저장돼요. 같은 기기를 쓰는 사람은 볼 수 있으니, 공용 기기에서는 첫 쪽 "저장과 이어하기"에서 저장하지 않기를 켜요. 나침이는 정해진 말만 하는 안내 캐릭터이고, AI 상담이 아니에요.</p>
-  <p><a href="schools.html">고등학교 종류와 일정 둘러보기</a> · v1.4 · 2026-11-11</p>
+  <p>쓴 내용은 서버로 보내지 않고 이 브라우저에만 저장돼요. 같은 기기를 쓰는 사람은 볼 수 있으니, 공용 기기에서는 첫 쪽 "저장과 이어하기"에서 저장하지 않기를 켜요. 나침이는 정해진 말만 하는 안내 캐릭터이고, AI 상담이 아니에요. "AI와 이야기해 보기"는 내가 고른 내용만 글로 만들어, 내가 쓰는 AI 앱에 직접 붙여 넣게 해 줘요. 이 노트가 AI에 무언가를 보내지는 않아요.</p>
+  <p><a href="schools.html">고등학교 종류와 일정 둘러보기</a> · v1.5 · 2026-11-14</p>
 </footer>
 </div>
 <div class="toast" id="toast" role="status"></div>
@@ -462,11 +478,12 @@ const CARDS=[
 [8,"학교 급식 남김이나 분리수거를 하루 동안 관찰하고 적기","숫자로 문제를 보는 게 끌리는지","하루"]
 ].map((c,i)=>({id:i,g:c[0],todo:c[1],find:c[2],time:c[3],note:c[4]||""}));
 
-const PAIR_BASE=10, PAIR_MAX=22, TRI_N=3, PICK_MAX=2;
+const PAIR_BASE=10, PAIR_MAX=22, TRI_N=3, PICK_MAX=2, ROUND_MIN=6, ROUND_MAX=12;
 const KEY="jinro-quest-v2", OLDKEY="pocheon-compass-v1";
 // v3: 단계가 6개로 줄었다(묶어 보기 없음). 끌리는 말(likes)은 버튼으로 고른다.
 function blank(){return {v:3,seed:(Math.random()*2**31)|0,step:0,mood:"",worry:"",sayAdult:"",pairs:[],skips:[],hist:[],pairTarget:PAIR_BASE,
-  tri:[],triSets:null,triIdx:0,nameTag:"",nameDoubt:"",likes:[],picks:[],share:{name:false,acts:false,plan:false,log:false,said:false,doubt:false,adult:false},triDraft:{odd:null,same:"",diff:""},guide:true,round:1}}
+  tri:[],triSets:null,triIdx:0,nameTag:"",nameDoubt:"",likes:[],picks:[],share:{name:false,acts:false,plan:false,log:false,dir:false,said:false,doubt:false,adult:false},triDraft:{odd:null,same:"",diff:""},guide:true,round:1,
+  rounds:[],ai:{res:true,dir:true,log:false,memo:false}}}
 let S=blank(), P=null, noSave=false, saveOK=true, brokenSaved=false;
 try{noSave=sessionStorage.getItem("jinro-nosave")==="1"}catch(e){}
 
@@ -509,6 +526,14 @@ function clean(o){const b=blank(),str=v=>typeof v==="string"?v.slice(0,2000):"",
     status:["picked","done","stopped"].includes(p.status)?p.status:"picked",fun:str(p.fun),hard:str(p.hard),again:[0,1,2].includes(p.again)?p.again:null,skill:[0,1,2].includes(p.skill)?p.skill:null}));
   // v2 기록의 공유 체크는 예전 기본값(모두 체크)일 수 있어 v3로 옮길 때 모두 해제한다
   const sh=o.v===3&&o.share&&typeof o.share==="object"?o.share:{};x.share={};Object.keys(b.share).forEach(k=>x.share[k]=sh[k]===true);
+  // 회차 요약(v1.5): 형식이 틀린 항목은 버리고, 회차 번호가 겹치면 뒤의 것을 쓴다
+  const gi=g=>Number.isInteger(g)&&g>=0&&g<GROUPS.length,rm=new Map();
+  (Array.isArray(o.rounds)?o.rounds:[]).forEach(q=>{if(!q||!Number.isInteger(q.r)||q.r<1||q.r>999)return;
+    if(!Array.isArray(q.w)||q.w.length!==GROUPS.length||!q.w.every(v=>Number.isInteger(v)&&v>=0&&v<=99))return;
+    rm.set(q.r,{r:q.r,d:/^\d{4}-\d{2}-\d{2}$/.test(q.d)?q.d:"",n:int(q.n,0,99,0),w:q.w.slice(),
+      top:Array.isArray(q.top)?[...new Set(q.top.filter(gi))]:[],likes:Array.isArray(q.likes)?[...new Set(q.likes.filter(g=>g===-1||gi(g)))]:[]})});
+  x.rounds=[...rm.values()].sort((a,b)=>a.r-b.r).slice(-ROUND_MAX);
+  const ai=o.ai&&typeof o.ai==="object"?o.ai:{};x.ai={};Object.keys(b.ai).forEach(k=>x.ai[k]=typeof ai[k]==="boolean"?ai[k]:b.ai[k]);
   return x}
 let hadSaved=false;
 // 읽기에 실패해도 원본은 지우지 않고 따로 보관한다. 저장본은 "이어서/새로"를 고르기 전까지 P에만 둔다.
@@ -531,8 +556,8 @@ function renderNav(){const n=$("#nav");n.innerHTML="";STEPS.forEach((t,i)=>{if(i
   b.innerHTML=`<span class="dot"></span>${t}`;if(i===cur)b.setAttribute("aria-current","step");if(isDone(i)){b.classList.add("done");b.setAttribute("aria-label",t+" (했어요)")}
   b.addEventListener("click",()=>go(i));n.appendChild(b)});
   const c=n.querySelector('[aria-current="step"]');if(c){const d=c.getBoundingClientRect().left-n.getBoundingClientRect().left;n.scrollLeft+=d-(n.clientWidth-c.offsetWidth)/2}}
-function go(i){cur=i;S.step=i;$("#headSub").hidden=i!==0;$$("section.step[data-step]").forEach(s=>s.hidden=+s.dataset.step!==i);renderNav();
-  if(i===0)renderMood();if(i===1)renderPair();if(i===2)renderName();if(i===3)renderCards();if(i===4)renderLog();if(i===5)renderShare();
+function go(i){cur=i;S.step=i;snapRound();if(i!==3)focusG=null;$("#headSub").hidden=i!==0;$$("section.step[data-step]").forEach(s=>s.hidden=+s.dataset.step!==i);renderNav();
+  if(i===0)renderMood();if(i===1)renderPair();if(i===2){renderName();renderAI($("#aiHost2"))}if(i===3)renderCards();if(i===4){renderLog();renderDir();renderAI($("#aiHost4"))}if(i===5)renderShare();
   say();save();window.scrollTo({top:0,behavior:"auto"});
   const h=document.querySelector(`section.step[data-step="${i}"] h2`);if(h&&go.moved){h.setAttribute("tabindex","-1");h.focus({preventScroll:true})}go.moved=true}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b&&!b.disabled)go(+b.dataset.go)});
@@ -552,7 +577,10 @@ function line(){
     return "좋아, 계속 가 보자. 멈추고 싶으면 언제든 아래 버튼을 눌러.";}
   case 2:return S.pairs.length<3?"아직 고른 게 적어서 흐릿해. 괜찮아, 실험 하나로 알아보자.":"이건 검사가 아니라 오늘 네가 고른 기록이야. 다시 하면 달라져도 괜찮아.";
   case 3:return S.picks.length?"좋아! 오늘은 여기까지야. 해 볼 날만 골라 두자.":"생각만으로는 잘 모를 때가 많아. 작게 한 번 해 보자. 하나면 충분해.";
-  case 4:return S.picks.some(p=>p.status==="done"&&p.skill===2)?"생각보다 잘 됐다니 좋다! 그게 잘할 수 있는 것의 단서야.":S.picks.some(p=>p.status==="done"&&p.again===0)?"별로였던 걸 알아낸 것도 성공이야.":"해 봤으면 버튼만 눌러 줘. 아직이면 날짜가 될 때까지 기다리면 돼.";
+  case 4:{const D=direction();if(D.dirs.length)return "여러 번 해 보니 이쪽이 자꾸 보이네. 그래도 정해진 건 아니야.";
+    if(D.ready)return "여러 쪽을 둘러보는 중이야. 그것도 좋은 출발이야.";
+    if(D.nExp&&!S.picks.some(p=>p.status==="done"&&(p.skill===2||p.again===0)))return "조금만 더 모이면 나의 방향을 보여 줄게.";}
+    return S.picks.some(p=>p.status==="done"&&p.skill===2)?"생각보다 잘 됐다니 좋다! 그게 잘할 수 있는 것의 단서야.":S.picks.some(p=>p.status==="done"&&p.again===0)?"별로였던 걸 알아낸 것도 성공이야.":"해 봤으면 버튼만 눌러 줘. 아직이면 날짜가 될 때까지 기다리면 돼.";
   case 5:return "안 나눠도 돼. 보여 주고 싶을 때만 쓰는 곳이야.";}
   return ""}
 function say(){$("#guide").hidden=!S.guide;$("#guideToggle").textContent=S.guide?"나침이 숨기기":"나침이 보이기";$("#say").textContent=line();pose()}
@@ -569,7 +597,8 @@ function renderMood(){$$("#moods .opt").forEach(b=>b.setAttribute("aria-pressed"
   const hard=S.mood==="hard";$("#helpBtn").hidden=!hard;$("#helpBtn").classList.toggle("primary",hard);$("#startBtn").classList.toggle("primary",!hard&&S.mood!=="school");
   $("#startBtn").textContent=hard?"그래도 둘러보기":answered()?"관심 찾기 이어서 하기":"관심 찾으러 가기 (5분)";
   let old=null;try{old=JSON.parse(localStorage.getItem(OLDKEY)||"null")}catch(e){}
-  $("#oldBtn").hidden=!(old&&(old.nameTag||old.nameDoubt))}
+  $("#oldBtn").hidden=!(old&&(old.nameTag||old.nameDoubt));
+  $("#dirLink").hidden=!(S.rounds.length||S.picks.some(p=>p.status==="done"))}
 $$("#moods .opt").forEach(b=>b.addEventListener("click",()=>{S.mood=S.mood===b.dataset.mood?"":b.dataset.mood;
   renderMood();renderNav();say();save()}));
 $("#worry").addEventListener("input",e=>{S.worry=e.target.value;save()});
@@ -653,13 +682,13 @@ function renderName(){const top=todayActs(),o=scoreOrder();renderResult();
 $("#nameTag").addEventListener("input",e=>{S.nameTag=e.target.value;save();renderNav()});
 
 // ---- 3 실험 카드
-let showAll=false;const openG=new Set();
+let showAll=false,focusG=null;const openG=new Set();
 // 점수 순서(고르기 결과만). 카드 순서는 여기에 끌리는 말을 먼저 올린다
 function scoreOrder(){const sc=gScore();const r=rng(55);const tie=sc.map(()=>r());return GROUPS.map((_,i)=>i).sort((a,b)=>sc[b]-sc[a]||tie[a]-tie[b])}
 function groupOrder(){const L=S.likes.filter(g=>g>=0),o=scoreOrder();return o.filter(g=>L.includes(g)).concat(o.filter(g=>!L.includes(g)))}
 function picked(cid){return S.picks.find(p=>p.cid===cid)}
 function ymd(d){const z=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`}
-function renderCards(){const order=groupOrder(),gs=showAll?order:order.slice(0,3);const area=$("#cardArea");area.innerHTML="";
+function renderCards(){let order=groupOrder();if(focusG!=null)order=[focusG].concat(order.filter(g=>g!==focusG));const gs=showAll?order:order.slice(0,3);const area=$("#cardArea");area.innerHTML="";
   gs.forEach(g=>{const wrap=document.createElement("div");wrap.style.display="grid";wrap.style.gap="10px";
     wrap.innerHTML=`<h3 class="groupname">${esc(GROUPS[g])}</h3>`;const grid=document.createElement("div");grid.className="cards";
     const isPk=c=>{const p=picked(c.id);return p&&p.status==="picked"};
@@ -734,9 +763,9 @@ function renderLog(focusKey){const area=$("#logArea");area.innerHTML="";$("#logD
             <label class="f"><span>힘들었던 순간</span><textarea maxlength="2000" data-hard placeholder="예: 찍는 건 귀찮았어">${esc(p.hard)}</textarea></label>
           </div></details>
       </div>`;
-    d.querySelectorAll("[data-st]").forEach(b=>b.addEventListener("click",()=>{p.status=b.dataset.st;save();renderLog(b.dataset.k);renderNav();say()}));
-    d.querySelectorAll("[data-ag]").forEach(b=>b.addEventListener("click",()=>{p.again=+b.dataset.ag;save();renderLog(b.dataset.k);say()}));
-    d.querySelectorAll("[data-sk]").forEach(b=>b.addEventListener("click",()=>{p.skill=+b.dataset.sk;save();renderLog(b.dataset.k);say()}));
+    d.querySelectorAll("[data-st]").forEach(b=>b.addEventListener("click",()=>{p.status=b.dataset.st;save();renderLog(b.dataset.k);renderDir();renderNav();say()}));
+    d.querySelectorAll("[data-ag]").forEach(b=>b.addEventListener("click",()=>{p.again=+b.dataset.ag;save();renderLog(b.dataset.k);renderDir();say()}));
+    d.querySelectorAll("[data-sk]").forEach(b=>b.addEventListener("click",()=>{p.skill=+b.dataset.sk;save();renderLog(b.dataset.k);renderDir();say()}));
     d.querySelector("[data-fun]").addEventListener("input",e=>{p.fun=e.target.value;save()});d.querySelector("[data-hard]").addEventListener("input",e=>{p.hard=e.target.value;save()});
     area.appendChild(d)});
   const m=expMap();if(m.length)area.insertAdjacentHTML("afterbegin",`<div class="note"><p><b>지금까지 알게 된 것</b></p>${m.map(([t,list,tip])=>`<p class="small"><b>${t}</b> · ${list.map(esc).join(", ")}${tip?`<br><span class="muted">${tip}</span>`:""}</p>`).join("")}</div>`);
@@ -748,11 +777,109 @@ function expMap(){const d=S.picks.filter(p=>p.status==="done"&&p.again!=null&&p.
   if(b.length)out.push(["좋아하는데 어려웠던 것",b,"연습하면 늘 수 있는 쪽이에요. 어려웠다는 건 못한다는 뜻이 아니에요."]);
   if(c.length)out.push(["잘 됐지만 끌리진 않은 것",c,"잘하는 것과 좋아하는 것이 다를 수도 있어요. 알아 두면 좋아요."]);
   return out}
+// ---- 나의 방향 (v1.5): 회차 요약 + 실험 기록에서 근거가 두 가지 이상 겹치는 쪽
+// 지금 회차 요약을 쌓거나 고친다(응답 6개 이상일 때만)
+function snapRound(){const n=answered();if(n<ROUND_MIN)return;
+  const q={r:S.round,d:ymd(new Date()),n:Math.min(99,n),w:gStats().win.map(v=>Math.min(99,v)),top:topGroups(),likes:S.likes.slice()};
+  const i=S.rounds.findIndex(x=>x.r===q.r);if(i>=0)S.rounds[i]=q;else S.rounds.push(q);
+  S.rounds=S.rounds.sort((a,b)=>a.r-b.r).slice(-ROUND_MAX)}
+// 근거 ① R: 회차에서 위에 나온 횟수(동점 4개 이상 회차는 빼고) ② L: 또 해 보고 싶어요 +1, 별로 −1 ③ K: 잘 됨 +1, 해냄 +0.5
+function evidence(rounds,picks){const n=GROUPS.length,R=new Array(n).fill(0),L=new Array(n).fill(0),K=new Array(n).fill(0),E=new Array(n).fill(0),hard=new Array(n).fill(0);
+  rounds.forEach(q=>{if(q.top.length&&q.top.length<=3)q.top.forEach(g=>R[g]++)});
+  const done=picks.filter(p=>p.status==="done"&&(p.again!=null||p.skill!=null));
+  done.forEach(p=>{const g=CARDS[p.cid].g;E[g]++;if(p.again===2)L[g]++;if(p.again===0)L[g]--;if(p.skill===2)K[g]++;if(p.skill===1)K[g]+=.5;if(p.skill===0||p.skill===1)hard[g]++});
+  return {R,L,K,E,hard,nRounds:rounds.length,nExp:done.length}}
+const NEED_R=2,NEED_E=2;
+function direction(rounds=S.rounds,picks=S.picks){const v=evidence(rounds,picks),{R,L,K}=v;
+  const ready=v.nRounds>=NEED_R&&v.nExp>=NEED_E;
+  const ok=GROUPS.map((_,g)=>{const kinds=(R[g]>0)+(L[g]>0)+(K[g]>0);return L[g]>0&&kinds>=2&&(R[g]>=2||L[g]+K[g]>=2)});
+  const all=ready?GROUPS.map((_,g)=>g).filter(g=>ok[g]).sort((a,b)=>(R[b]+L[b]+K[b])-(R[a]+L[a]+K[a])||R[b]-R[a]):[];
+  const dirs=all.slice(0,2),more=all.slice(2);
+  const practice=ready?GROUPS.map((_,g)=>g).filter(g=>!dirs.includes(g)&&L[g]>0&&(K[g]===0||v.hard[g]>0)):[];
+  // 방향이 없을 때 다음에 해 볼 쪽: 여러 회차에서 위에 나왔지만 아직 실험하지 않은 묶음
+  const tryG=GROUPS.map((_,g)=>g).filter(g=>R[g]>0&&!v.E[g]).sort((a,b)=>R[b]-R[a]);
+  return {...v,ready,dirs,more,practice,tryG}}
+const KW=[["로봇","건축","게임 개발"],["연구원","생명과학","데이터"],["간호","상담","교사"],["디자인","영상","음악"],["기자","번역","작가"],["마케팅","창업","기획"],["운동","요리","소방"],["수의","환경","농업"],["사회복지","공무원","법"]];
+function why(D,g){const out=[];if(D.R[g])out.push(`고르기 ${D.nRounds}번 중 ${D.R[g]}번 위에 나왔어요`);
+  const ps=S.picks.filter(p=>p.status==="done"&&CARDS[p.cid].g===g&&(p.again!=null||p.skill!=null));
+  if(ps.length){const a=ps.filter(p=>p.again===2).length,k2=ps.filter(p=>p.skill===2).length,k1=ps.filter(p=>p.skill===1).length,parts=[];
+    if(ps.length===1){if(a)parts.push("또 해 보고 싶었고");if(k2)parts.push("생각보다 잘 됐어요");else if(k1)parts.push("어려웠지만 해냈어요")}
+    else{if(a)parts.push(a===ps.length?`${a}개 모두 또 해 보고 싶었고`:`${a}개는 또 해 보고 싶었고`);if(k2)parts.push(`${k2}개는 생각보다 잘 됐어요`);else if(k1)parts.push(`${k1}개는 어려웠지만 해냈어요`)}
+    let t=`실험 ${ps.length}개를 해 봤어요`;if(parts.length)t+=". "+parts.join(ps.length===1?" ":", ").replace(/싶었고$/,"싶었어요");out.push(t)}
+  return out}
+function nm(g){return `<span style="white-space:nowrap">${esc(GROUPS[g])}</span>`}
+function renderDir(){const area=$("#dirArea");if(!area)return;const D=direction();
+  if(!D.nRounds&&!D.nExp&&!S.picks.length){area.innerHTML="";return}
+  const head=`<p class="eyebrow">나의 방향 · 지금까지 고르기 ${D.nRounds}번, 실험 ${D.nExp}개</p>`;
+  if(!D.ready){const dot=(n,k)=>"●".repeat(Math.min(n,k))+"○".repeat(Math.max(0,k-n));
+    const need=[];if(D.nRounds<NEED_R)need.push(`고르기 ${NEED_R-D.nRounds}번`);if(D.nExp<NEED_E)need.push(`실험 ${NEED_E-D.nExp}개`);
+    area.innerHTML=`<div class="dir">${head}<h3>나의 방향은 아직 준비 중이에요</h3>
+      <p class="dots small" aria-label="고르기 ${Math.min(D.nRounds,NEED_R)}/${NEED_R}, 실험 ${Math.min(D.nExp,NEED_E)}/${NEED_E}">고르기 <i>${dot(D.nRounds,NEED_R)}</i> · 실험 <i>${dot(D.nExp,NEED_E)}</i></p>
+      <p class="small">${need.join(", ")}만 더 하면 보이기 시작해요. 한 번의 결과는 흔들리니까, 여러 번 겹치는 쪽을 찾아 보여 줄게요.</p>
+      ${D.nRounds<NEED_R?`<p class="small muted">고르기는 아래 "관심 찾기 한 번 더 하기"로 해요. 며칠 지나서 하면 더 좋아요.</p>`:""}</div>`;return}
+  let h=`<div class="dir">${head}`;
+  if(D.dirs.length){h+=`<h3>${D.dirs.map(nm).join(", ")} 쪽이 자주 이어지고 있어요</h3>`;
+    D.dirs.forEach(g=>{h+=`<div style="display:grid;gap:6px">${D.dirs.length>1?`<p class="small"><b>${esc(GROUPS[g])}</b></p>`:""}<ul>${why(D,g).map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>`});
+    if(D.more.length)h+=`<p class="small muted">${D.more.map(g=>esc(GROUPS[g])).join(", ")} 쪽도 함께 이어지고 있어요.</p>`;
+    h+=`<div style="display:grid;gap:8px"><p class="small"><b>다음에 해 볼 것</b></p><div class="row">${D.dirs.map(g=>`<button type="button" class="btn" data-fg="${g}">${esc(GROUPS[g])} 다른 실험 보기</button>`).join("")}</div>
+      <p class="small kw">직업·학과 알아보기: <a href="https://www.career.go.kr/" target="_blank" rel="noopener">커리어넷 ↗</a> 에서 ${D.dirs.map(g=>KW[g].map(k=>`<span class="chip">${esc(k)}</span>`).join("")).join("")} 검색해 보기</p></div>`}
+  else{h+=`<h3>아직 한쪽으로 모이지 않았어요</h3><p class="small">여러 쪽을 둘러보는 중이라는 뜻이에요. 끌렸던 쪽을 직접 해 보면 더 또렷해져요.</p>`;
+    if(D.tryG.length)h+=`<div class="row">${D.tryG.slice(0,2).map(g=>`<button type="button" class="btn" data-fg="${g}">${esc(GROUPS[g])} 실험 해 보기</button>`).join("")}</div>`}
+  if(D.practice.length)h+=`<p class="small"><b>좋아하는데 아직 어려운 쪽</b> · ${D.practice.map(g=>esc(GROUPS[g])).join(", ")}<br><span class="muted">연습하면 늘 수 있어요. 어려웠다는 건 못한다는 뜻이 아니에요.</span></p>`;
+  h+=`<p class="small muted fine">방향은 다음에 둘러볼 쪽이에요. 진로를 정하는 답이 아니고, 해 볼수록 바뀔 수 있어요. 학교가 궁금하면 <a href="schools.html">고등학교 둘러보기</a></p></div>`;
+  area.innerHTML=h;
+  area.querySelectorAll("[data-fg]").forEach(b=>b.addEventListener("click",()=>{const g=+b.dataset.fg;focusG=g;openG.add(g);go(3);
+    const f=$(`#cardArea [data-g="${g}"] h3`);if(f){f.setAttribute("tabindex","-1");f.scrollIntoView({block:"start"});f.focus({preventScroll:true})}}))}
+// 나누기·AI 글에 쓰는 방향 문장
+function dirLines(){const D=direction();if(!D.ready)return [];
+  if(!D.dirs.length)return ["나의 방향: 아직 한쪽으로 모이지 않았어요(여러 쪽을 둘러보는 중)"];
+  const L=[`나의 방향(다음에 둘러볼 쪽): ${D.dirs.map(g=>GROUPS[g]).join(", ")}`];
+  D.dirs.forEach(g=>why(D,g).forEach(t=>L.push(`- ${GROUPS[g]}: ${t}`)));
+  if(D.practice.length)L.push(`좋아하는데 아직 어려운 쪽: ${D.practice.map(g=>GROUPS[g]).join(", ")}`);
+  return L}
+
+// ---- AI와 이야기해 보기: 고른 내용만 질문 글로 만들어, 학생이 쓰는 AI 앱에 붙여 넣게 한다
+const AI_OPT=[["res","오늘의 결과"],["dir","나의 방향"],["log","실험 기록(누른 버튼)"],["memo","내가 쓴 글(이름 붙이기·한 줄 기록)"]];
+function aiText(){const L=["나는 중학생이고, '진로 실험 노트'에서 내가 좋아하는 것과 잘할 수 있는 것을 찾고 있어."];let has=false;
+  if(S.ai.res&&S.pairs.length){const tg=topGroups(),top=todayActs(),lk=likeText();L.push("");
+    if(S.pairs.length>=3&&tg.length)L.push(tg.length>3?"오늘은 여러 쪽이 비슷하게 끌렸어.":`오늘 많이 끌린 쪽: ${tg.map(g=>GROUPS[g]).join(", ")}`);
+    if(top.length)L.push(`오늘 고른 활동: ${top.map(i=>ACTS[i].name).join(", ")}`);if(lk.length)L.push(`끌리는 말: ${lk.join(", ")}`);has=true}
+  if(S.ai.dir){const t=dirLines();if(t.length){L.push("",...t);has=true}}
+  if(S.ai.log){const d=S.picks.filter(p=>p.status==="done"&&(p.again!=null||p.skill!=null));if(d.length){L.push("","해 본 실험");
+    d.forEach(p=>L.push(`- ${CARDS[p.cid].todo}: ${[p.again!=null?AGAIN[p.again][1]:"",p.skill!=null?SKILL[p.skill][1]:""].filter(Boolean).join(" / ")}`));has=true}}
+  if(S.ai.memo){const m=[];if(S.nameTag.trim())m.push(`내 관심에 붙인 이름: ${S.nameTag.trim()}`);
+    S.picks.forEach(p=>{if(p.fun.trim())m.push(`재미있던 순간(${CARDS[p.cid].todo}): ${p.fun.trim()}`);if(p.hard.trim())m.push(`힘들었던 순간(${CARDS[p.cid].todo}): ${p.hard.trim()}`)});
+    if(m.length){L.push("",...m);has=true}}
+  if(!has)return "";
+  L.push("","부탁이 있어.","- 학교 추천이나 점수, 합격 가능성은 말하지 말아 줘. 진로를 정해 주지도 말아 줘.",
+    "- 내가 무엇을 좋아하고 잘할 수 있는지 더 생각해 볼 수 있게 질문을 2~3개 해 줘.","- 이번 주에 30분~1시간이면 해 볼 수 있는 작은 실험 하나만 같이 골라 줘.","- 쉬운 말로 짧게 답해 줘.");
+  return L.join("\n")}
+const AI_URL=[["ChatGPT","https://chatgpt.com/?q="],["Claude","https://claude.ai/new?q="]];
+function renderAI(host){if(!host)return;const was=host.querySelector("details.ai-d");const open=was?was.open:false;
+  const t=aiText();if(!t&&!S.pairs.length){host.innerHTML="";return}
+  host.innerHTML=`<details class="small ai-d"${open?" open":""}><summary class="muted">AI와 이야기해 보기 (하고 싶을 때만)</summary><div class="ai">
+    <p>내가 쓰는 AI 앱(ChatGPT·Claude·Gemini 등)에 붙여 넣을 질문 글을 만들어 줘요. 넣을 것만 체크해요. 이름·학교·나이는 넣지 않아요.</p>
+    <p class="muted">AI 앱마다 쓸 수 있는 나이가 달라요. 보호자와 함께 쓰는 AI가 있을 때만 써 보세요. AI랑 이야기해 봐도 좋지만, 정하는 건 나예요.</p>
+    <div style="display:grid;gap:6px" data-opts></div>
+    <pre class="out" data-out></pre>
+    <div class="row"><button type="button" class="btn primary" data-copy>질문 글 복사하기</button></div>
+    <details data-links><summary class="muted">AI 앱으로 바로 열기</summary><div class="links" style="margin-top:8px"></div>
+      <p class="muted" style="margin-top:6px">폰에서는 질문이 안 들어갈 수 있어요. 그럴 땐 복사한 글을 붙여 넣어요. Gemini 같은 다른 AI도 복사해서 붙여 넣으면 돼요.</p></details>
+    <textarea class="code" data-box readonly hidden aria-label="AI에 붙여 넣을 질문 글"></textarea></div></details>`;
+  const opts=host.querySelector("[data-opts]"),out=host.querySelector("[data-out]"),cp=host.querySelector("[data-copy]"),links=host.querySelector("[data-links] .links");
+  const show=()=>{const t=aiText();out.textContent=t||"넣을 것을 위에서 체크하면 여기에 글이 만들어져요. 내용이 없는 항목은 넣지 않아요.";cp.disabled=!t;
+    const q=encodeURIComponent(t);links.innerHTML=t&&q.length<6000?AI_URL.map(([n,u])=>`<a class="btn" href="${u}${q}" target="_blank" rel="noopener">${n}에서 열기 ↗</a>`).join(""):`<span class="muted">${t?"글이 길어서 복사로만 넘길 수 있어요.":""}</span>`};
+  AI_OPT.forEach(([k,l])=>{const lab=document.createElement("label");lab.className="chk";lab.innerHTML=`<input type="checkbox" ${S.ai[k]?"checked":""}><span>${l}</span>`;
+    lab.querySelector("input").addEventListener("change",e=>{S.ai[k]=e.target.checked;save();show()});opts.appendChild(lab)});
+  cp.addEventListener("click",()=>{const t=aiText();if(t)copyText(t,"복사했어요. AI 앱에 붙여 넣으면 돼요",host.querySelector("[data-box]"))});
+  show()}
+
 // 다시 하기: 고르기 기록만 새로. 끌리는 말·이름·실험 기록은 그대로 둔다
-$("#again").addEventListener("click",()=>{S.round++;S.seed=(Math.random()*2**31)|0;S.pairs=[];S.skips=[];S.hist=[];S.pairTarget=PAIR_BASE;S.triSets=null;save();go(1);toast("새로 골라요. 또 해 보고 싶다고 한 쪽이 조금 먼저 나와요")});
+$("#again").addEventListener("click",()=>{snapRound();S.round++;S.seed=(Math.random()*2**31)|0;S.pairs=[];S.skips=[];S.hist=[];S.pairTarget=PAIR_BASE;S.triSets=null;save();go(1);toast("새로 골라요. 또 해 보고 싶다고 한 쪽이 조금 먼저 나와요")});
 
 // ---- 5 나누기
 function shareItems(){const L=[["name","끌리는 말과 이름"],["acts","오늘의 결과(끌린 쪽과 고른 활동)"],["plan","고른 실험과 날짜"],["log","실험 기록"]];
+  if(direction().ready)L.push(["dir","나의 방향(지금까지 자주 이어진 쪽)"]);
   if(S.tri.some(t=>t.same||t.diff))L.push(["said","예전에 묶어 보기에서 쓴 말"]);if(S.nameDoubt.trim())L.push(["doubt","아직 잘 모르겠는 부분"]);
   L.push(["adult","하고 싶은 말"]);return L}
 function shareText(){const L=[];const top=todayActs();
@@ -765,6 +892,7 @@ function shareText(){const L=[];const top=todayActs();
   if(S.share.log){const d=S.picks.filter(p=>p.status==="done");if(d.length){L.push("","해 본 기록");d.forEach(p=>{L.push(`- ${CARDS[p.cid].todo}`);
     if(p.again!=null)L.push(`  해 보니: ${AGAIN[p.again][1]}`);if(p.skill!=null)L.push(`  잘 됐는지: ${SKILL[p.skill][1]}`);if(p.fun)L.push(`  재미있던 순간: ${p.fun}`);if(p.hard)L.push(`  힘들었던 순간: ${p.hard}`)})}}
   if(S.share.log){const m=expMap();if(m.length){L.push("","지금까지 알게 된 것");m.forEach(([t,list])=>L.push(`- ${t}: ${list.join(", ")}`))}}
+  if(S.share.dir){const t=dirLines();if(t.length)L.push("",...t)}
   if(S.share.adult&&S.sayAdult.trim())L.push("",`하고 싶은 말: ${S.sayAdult.trim()}`);
   if(!L.length)return "";
   return [`진로 실험 노트 · ${ymd(new Date())}`,"이건 검사 결과나 진로 결정이 아니라, 지금 해 보고 싶은 일을 둘러본 기록이에요."].concat(L,["","(읽는 분께: 결과보다 '어떤 순간이 재미있었어? 뭐가 생각보다 잘 됐어?'를 물어봐 주세요.)"]).join("\n")}
@@ -792,6 +920,7 @@ $("#resetAll").addEventListener("click",()=>{const b=$("#resetAll");if(b.dataset
   else{b.dataset.arm="1";b.textContent="정말 지우려면 한 번 더 눌러요";setTimeout(()=>{delete b.dataset.arm;b.textContent="모두 지우기"},3000)}});
 
 if(/KAKAOTALK|Instagram|FBAN|FBAV|NAVER\(inapp|DaumApps|BAND\/|; wv\)|Line\//i.test(navigator.userAgent))$("#inappBanner").hidden=false;
+if(typeof globalThis.__SIM__==="object")Object.assign(globalThis.__SIM__,{setS:x=>{S=x},getS:()=>S,blank,clean,nextPair,topGroups,gStats,snapRound,direction,dirLines,aiText,CARDS,ACTS,GROUPS});
 load();
 // 다시 왔을 때: 날짜 없이 고른 실험만 있으면 실험 쪽, 고른 실험이 있으면 기록 쪽, 아니면 하던 곳
 function resumeStep(){if(S.picks.some(p=>p.status==="picked"&&!p.date)&&!S.picks.some(p=>p.status==="done"))return 3;
